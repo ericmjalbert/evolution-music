@@ -1,0 +1,148 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage[top=1in,bottom=1in,right=1.25in,left=1.25in]{geometry}
+\usepackage[]{algorithm2e}
+\usepackage{tikz}
+
+% For the finite state machine
+\usetikzlibrary{arrows,automata}
+
+% Header Settings 
+\pagestyle{fancy}
+\lhead{Eric Jalbert - 0712946}
+\rhead{MATH 6182 - Final Project}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\graphicspath{{./},{Figures/}}
+
+\begin{document}
+\section*{Overview}
+%Explain what the experiment is and why we are doing it.
+%   Which features of evolutionary computation are under examination,
+%   How are we examining them,
+%   What do we hope to find out.
+The idea for my final project is to use the ideas from evolutinary algorithms to create music. Once a basic implementation is completed the various evolutionary methods (crossover, uniform crossover, single point mutations, etc) will be tried and the resulting music will be analysed. The analsis of the resulting songs will be compared though human enjoyability; since this is a proof-of-concept project, this will be sufficient. 
+
+
+\section*{Methods}
+%Describe the methods you are using
+%   Give a description, possibly pseudo-code, for the algorithm(s) used
+%   State the source of you code (instructor, self, help from who),
+%   State the number and type of runs of the code you made
+
+\subsection*{Representation of a Song}
+  To work with evolutationary algorithms and fitness functions, a new way of representing songs had to be created. This was done using the idea of bitwise storage of information. Figure \ref{fig:bitRepresentation}
+
+\begin{figure}[h!tb]
+\begin{center}
+    \begin{tikzpicture}    
+        \draw (0,0) -- (3.2,0) -- (3.2,0.4) -- (0,0.4);
+        \draw (3.6,0) -- (6.8,0) -- (6.8,0.4) -- (3.6,0.4);
+        \draw (7.2,0) -- (10.4,0) -- (10.4,0.4) -- (7.2,0.4);
+        \draw (10.8,0) -- (14.0,0) -- (14.0,0.4) -- (10.8,0.4);
+        \foreach \i in {0,0.4,...,14}
+        {
+            \draw (\i,0) -- (\i, 0.4);
+        }
+        \node [below] at (1.6,0) {Instrument};
+        \node [below] at (5.2,0) {Channel};
+        \node [below] at (8.8,0) {Duration};
+        \node [below] at (12.4,0) {Note};
+    \end{tikzpicture}
+    \caption{
+    \label{fig:bitRepresentation}
+\end{center}
+\end{figure}
+
+\subsection*{Evolving a Song}
+
+\begin{algorithm}[h]
+\dontprintsemicolon
+\KwData{runs = 10; popSize = 32; genLength = 500; playNum = 150; eliteNum = 16 }
+\Begin
+{
+  \SetLine
+  Initialize a new population of size \textit{\textbf{popSize}}\;
+  \For{each iterate in \textbf{runs}}
+  {
+    \For{each generation in \textbf{genLength}}
+    {
+      Play a round-robin tournament\;
+      Compute the fitness of each member by playing \textit{\textbf{playNum}} games\;
+      Store the top \textit{\textbf{eliteNum}} members\;
+      Mutate the rest of the members\;
+    }
+    Report Statistics\;
+    Reinitialize the population\;
+  }
+}
+\caption{Algorithm for evolving prisoner's dilemma strategies. Provided by Daniel Ashlock, implemented in C++.}
+\label{alg:evolveStrat}
+\end{algorithm}
+
+
+\subsection*{Iterating Through All Strategies}
+The second attempt to find a tournament winning strategy was to use the fact that there are a finite number of strategies for a given number of states. Ignoring equivalent strategies, the set of all possible n-state strategies is $2^{2n+1} \cdot n^{2n+1}$. This is derived by looking at the possible choices of C or D for each state ($2$ choices) and the $n$ possible state transitions. The exponent $2n+1$ is because for each state there are two reactions,a reaction to cooperation and a reaction to defection and then one addition choice for the starting condition.
+
+Realizing this, an algoithm could be developed to iterate through all the possible $n-$state strategies and compare them against themselves in the tournament. Algorithm \ref{alg:iterateAll} shows this. 
+
+\begin{algorithm}[h]
+\dontprintsemicolon
+\KwData{numOfStates = 3}
+\Begin
+{
+  \SetLine
+  Generate all possible strategies with \textit{\textbf{numOfStates}}-states\;
+  Randomize the list of possible strategies\;
+  \For{each strategy}
+  {
+    Store strategy in tournament roster\;
+    \If{there are 10 strategies in roster}
+    {
+      Add a preselected population of strategies to roster\;
+      Run tournament\;
+      Write tournament results to file\;
+      Delete bottom 3 strategies that were not in preselected population\;
+    }
+  }
+  Tally tournament results\;
+  Output top 12 strategies\;
+}
+\caption{Algorithm for selecting good prisoner's dilemma strategies from set of all stratgies. Provided by Eric Jalbert, implemented in Python and Bash scripts.}
+\label{alg:iterateAll}
+\end{algorithm}
+
+
+\section*{Results}
+%Clearly describe you results.
+%   Give a summary, probably table(s) or graph(s), of the results you obtained. 
+%   Present those results as clearly as possible.
+%   Where possible, support your results with statistics.
+%   Use statistics to determine the significance of your results.
+
+\subsection*{Evolving a Strategy}
+
+
+
+\section*{Conclusions and Discussion}
+%Explain what happened and why you think it happened.
+%    State what significance the results had in terms of the test environment and the features of evolutionary computation under investigation
+%    State problems you encountered in gathering data.
+%    Explain your results logically and with support, include alternate explanations if you see them.
+
+
+\end{document}
+
+
+
+
+
+
+
